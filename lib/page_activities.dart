@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:codelab_timetracker/page_intervals.dart';
-import 'package:codelab_timetracker/page_report.dart';
+import 'page_report.dart';
 import 'package:codelab_timetracker/tree.dart' hide getTree;
 // the old getTree()
 import 'package:codelab_timetracker/requests.dart';
@@ -24,7 +24,7 @@ class _PageActivitiesState extends State<PageActivities> {
   late int id;
   late Future<Tree> futureTree;
   late Timer _timer;
-  static const int periodRefresh = 2;
+  static const int periodRefresh = 6;
 
   @override
   void initState() {
@@ -121,6 +121,7 @@ class _PageActivitiesState extends State<PageActivities> {
   }
 
   void _navigateDownActivities(int childId) {
+    _timer.cancel();
     Navigator.of(context)
         .push(MaterialPageRoute<void>(
       builder: (context) => PageActivities(childId),
@@ -131,6 +132,7 @@ class _PageActivitiesState extends State<PageActivities> {
   }
 
   void _navigateDownIntervals(int childId) {
+    _timer.cancel();
     Navigator.of(context)
         .push(MaterialPageRoute<void>(
       builder: (context) => PageIntervals(childId),
@@ -146,9 +148,17 @@ class _PageActivitiesState extends State<PageActivities> {
   }
 
   void _activateTimer() {
-    _timer = Timer.periodic(Duration(seconds: periodeRefresh), (Timer t) {
+    _timer = Timer.periodic(const Duration(seconds: periodRefresh), (Timer t) {
       futureTree = getTree(id);
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    // "The framework calls this method when this State object will never build again"
+    // therefore when going up
+    _timer.cancel();
+    super.dispose();
   }
 }

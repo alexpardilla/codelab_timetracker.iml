@@ -1,5 +1,7 @@
+import 'dart:async';
+import 'package:codelab_timetracker/page_activities.dart';
 import 'package:flutter/material.dart';
-import 'package:codelab_timetracker/tree.dart' as Tree;
+//import 'package:codelab_timetracker/tree.dart' as Tree;
 import 'package:codelab_timetracker/tree.dart' as Tree hide getTree;
 // to avoid collision with an Interval class in another library
 import 'package:codelab_timetracker/requests.dart';
@@ -18,12 +20,15 @@ class _PageIntervalsState extends State<PageIntervals> {
   //late Tree.Tree tree;
   late int id;
   late Future<Tree.Tree> futureTree;
+  late Timer _timer;
+  static const int periodeRefresh = 6;
 
   @override
   void initState() {
     super.initState();
     id = widget.id;
     futureTree = getTree(id);
+    _activateTimer();
     //tree = Tree.getTreeTask();
     // the root is a task and the children its intervals
   }
@@ -87,5 +92,19 @@ class _PageIntervalsState extends State<PageIntervals> {
       title: Text('from ${strInitialDate} to ${strFinalDate}'),
       trailing: Text('$strDuration'),
     );
+  }
+  void _activateTimer() {
+    _timer = Timer.periodic(Duration(seconds: periodeRefresh), (Timer t) {
+      futureTree = getTree(id);
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    // "The framework calls this method when this State object will never build again"
+    // therefore when going up
+    _timer.cancel();
+    super.dispose();
   }
 }
