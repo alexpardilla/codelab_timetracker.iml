@@ -1,4 +1,3 @@
-//import 'package:codelab_timetracker/tree.dart';
 import 'package:flutter/material.dart';
 import 'package:codelab_timetracker/page_intervals.dart';
 import 'package:codelab_timetracker/page_report.dart';
@@ -6,6 +5,8 @@ import 'package:codelab_timetracker/tree.dart' hide getTree;
 // the old getTree()
 import 'package:codelab_timetracker/requests.dart';
 // has the new getTree() that sends an http request to the server
+import 'dart:async';
+
 
 class PageActivities extends StatefulWidget {
   final int id;
@@ -22,14 +23,18 @@ class _PageActivitiesState extends State<PageActivities> {
   //late Tree tree;
   late int id;
   late Future<Tree> futureTree;
+  late Timer _timer;
+  static const int periodRefresh = 2;
 
   @override
   void initState() {
     super.initState();
     id = widget.id;
     futureTree = getTree(id);
+    _activateTimer();
     //tree = getTree();
   }
+
 
   // future with listview
   // https://medium.com/nonstopio/flutter-future-builder-with-list-view-builder-d7212314e8c9
@@ -46,8 +51,13 @@ class _PageActivitiesState extends State<PageActivities> {
               title: Text(snapshot.data!.root.name),
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
-                    onPressed: () {} // TODO go home page = root
-                ),
+                    onPressed: () {
+                      while(Navigator.of(context).canPop()) {
+                        print("pop");
+                        Navigator.of(context).pop();
+                      }
+                      PageActivities(0);
+                    }),
                 //TODO other actions
               ],
             ),
@@ -93,7 +103,15 @@ class _PageActivitiesState extends State<PageActivities> {
         title: Text('${activity.name}'),
         trailing: trailing,
         onTap: () => _navigateDownIntervals(activity.id),
-        onLongPress: () {}, // TODO start/stop counting the time for tis task
+        onLongPress: () {
+          if ((activity as Task).active) {
+            stop(activity.id);
+            _refresh(); //to show immediately that task has started
+          } else {
+            start(activity.id);
+            _refresh(); //to show immediately that task has stopped
+          }
+        },
       );
     } else {
       throw(Exception("Activity that is neither a Task or a Project"));
@@ -106,13 +124,31 @@ class _PageActivitiesState extends State<PageActivities> {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(
       builder: (context) => PageActivities(childId),
-    ));
+    )).then((var value) {
+      _activateTimer();
+      _refresh();
+    });
   }
 
   void _navigateDownIntervals(int childId) {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(
       builder: (context) => PageIntervals(childId),
-    ));
+    )).then((var value) {
+      _activateTimer();
+      _refresh();
+    });
+  }
+
+  void _refresh() async {
+    futureTree = getTree(id);
+    setState(() {});
+  }
+
+  void _activateTimer() {
+    _timer = Timer.periodic(Duration(seconds: periodeRefresh), (Timer t) {
+      futureTree = getTree(id);
+      setState(() {});
+    });
   }
 }

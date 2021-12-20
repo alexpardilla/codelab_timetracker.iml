@@ -42,8 +42,13 @@ class _PageIntervalsState extends State<PageIntervals> {
               title: Text(snapshot.data!.root.name),
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
-                  onPressed: () {}, // TODO
-                )
+                  onPressed: () {
+                    while(Navigator.of(context).canPop()) {
+                      print("pop");
+                      Navigator.of(context).pop();
+                    }
+                    PageActivities(0);
+                  }),
               ],
             ),
             body: ListView.separated(
