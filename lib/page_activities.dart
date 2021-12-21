@@ -6,7 +6,7 @@ import 'package:codelab_timetracker/tree.dart' hide getTree;
 import 'package:codelab_timetracker/requests.dart';
 // has the new getTree() that sends an http request to the server
 import 'dart:async';
-
+import 'package:codelab_timetracker/page_addActivity.dart';
 
 class PageActivities extends StatefulWidget {
   final int id;
@@ -21,6 +21,7 @@ class PageActivities extends StatefulWidget {
 
 class _PageActivitiesState extends State<PageActivities> {
   //late Tree tree;
+  String nameFather = 'All Projects';
   late int id;
   late Future<Tree> futureTree;
   late Timer _timer;
@@ -45,10 +46,13 @@ class _PageActivitiesState extends State<PageActivities> {
       // this makes the tree of children, when available, go into snapshot.data
       builder: (context, snapshot) {
         // anonymous function
+        if (snapshot.data!.root.name != 'root') {
+          nameFather = snapshot.data!.root.name;
+        }
         if (snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(snapshot.data!.root.name),
+              title: Text(nameFather),
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
                     onPressed: () {
@@ -56,7 +60,7 @@ class _PageActivitiesState extends State<PageActivities> {
                         print("pop");
                         Navigator.of(context).pop();
                       }
-                      PageActivities(0);
+
                     }),
                 //TODO other actions
               ],
@@ -69,6 +73,16 @@ class _PageActivitiesState extends State<PageActivities> {
                   _buildRow(snapshot.data!.root.children[index], index),
               separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
+            ),
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PageReport()),
+                  );
+                }
+
             ),
           );
         } else if (snapshot.hasError) {
@@ -91,6 +105,7 @@ class _PageActivitiesState extends State<PageActivities> {
     if (activity is Project) {
       return ListTile(
         title: Text('${activity.name}'),
+        subtitle: const Text('Project'),
         trailing: Text('$strDuration'),
         onTap: () => _navigateDownActivities(activity.id),
       );
@@ -101,6 +116,7 @@ class _PageActivitiesState extends State<PageActivities> {
       trailing = Text('$strDuration');
       return ListTile(
         title: Text('${activity.name}'),
+        subtitle: const Text('Task'),
         trailing: trailing,
         onTap: () => _navigateDownIntervals(activity.id),
         onLongPress: () {
