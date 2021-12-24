@@ -21,7 +21,6 @@ class PageActivities extends StatefulWidget {
 
 class _PageActivitiesState extends State<PageActivities> {
   //late Tree tree;
-  String nameFather = 'All Projects';
   late int id;
   late Future<Tree> futureTree;
   late Timer _timer;
@@ -46,13 +45,10 @@ class _PageActivitiesState extends State<PageActivities> {
       // this makes the tree of children, when available, go into snapshot.data
       builder: (context, snapshot) {
         // anonymous function
-        if (snapshot.data!.root.name != 'root') {
-          nameFather = snapshot.data!.root.name;
-        }
         if (snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(nameFather),
+              title: Text(id == 0 ? "Time Tracker" : snapshot.data!.root.name),
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
                     onPressed: () {
@@ -79,7 +75,7 @@ class _PageActivitiesState extends State<PageActivities> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PageReport()),
+                    MaterialPageRoute(builder: (context) => PageAddActivity(id)),
                   );
                 }
 

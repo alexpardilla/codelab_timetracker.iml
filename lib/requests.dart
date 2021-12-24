@@ -59,3 +59,14 @@ Future<void> stop(int id) async {
     throw Exception('Failed to get children');
   }
 }
+
+Future<void> createActivity(String name, String className,int fatherId) async {
+  var uri = Uri.parse("$baseUrl/createTask?$name&=$fatherId&=$className");
+  final response = await client.get(uri);
+  if (response.statusCode == 200) {
+    print("statusCode=$response.statusCode");
+  } else {
+    print("statusCode=$response.statusCode");
+    throw Exception('Failed');
+  }
+}

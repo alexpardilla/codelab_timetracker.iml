@@ -1,9 +1,11 @@
-import 'package:codelab_timetracker/page_activities.dart';
-import 'package:codelab_timetracker/tree.dart';
+import 'package:codelab_timetracker/requests.dart';
 import 'package:flutter/material.dart';
 
 
+
 class PageAddActivity extends StatefulWidget {
+  late int id;
+  PageAddActivity(this.id);
 
   @override
   _PageAddActivityState createState() => _PageAddActivityState();
@@ -11,17 +13,28 @@ class PageAddActivity extends StatefulWidget {
 
 class _PageAddActivityState extends State<PageAddActivity> {
   //late Tree.Tree tree;
+  late int id;
+
+  final _listaC = ['Project', 'Task'];
+  String _vistaC = 'Project';
+
   final _keyForm = GlobalKey<FormState>(); // Our created key
   final _name = TextEditingController();
-  final _class = TextEditingController();
-  final _initialDate = TextEditingController();
-  final _finalDate = TextEditingController();
-  final _duration = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    id = widget.id;
+
+    //tree = Tree.getTreeTask();
+    // the root is a task and the children its intervals
+  }
 
   @override
   Widget build(BuildContext context) {
-
-      return Scaffold(
+    return SafeArea(child:
+      Scaffold(
         appBar: AppBar(
           title: Text("FORM"),
           actions: <Widget>[
@@ -35,8 +48,9 @@ class _PageAddActivityState extends State<PageAddActivity> {
           ],
         ),
         body: _buildRow(),
-      );
-    }
+      ),
+    );
+  }
 
 
   Widget _buildRow() {
@@ -54,19 +68,39 @@ class _PageAddActivityState extends State<PageAddActivity> {
               controller: _name,
               decoration: InputDecoration(hintText: 'Insert name of task/project'),
             ),
-            TextFormField(
-              controller: _class,
-              decoration: InputDecoration(hintText: 'Insert name of task/project'),
+            Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        child: Text('Que vols crear?'),
+
+                      ),
+                    ),
+
+                    DropdownButton(
+                      items: _listaC.map((String a) {
+                        return DropdownMenuItem(
+                            value: a,
+                            child: Text(a)
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() =>
+                        {
+                          _vistaC = newValue as String
+                        });
+                      },
+                      hint: Text(_vistaC),
+                    ),
+                  ],)
+
             ),
-            TextFormField(
-              controller: _initialDate,
-              obscureText: true,
-              decoration: InputDecoration(hintText: 'The password to log in.'),
-            ),
-            TextFormField(
-              controller: _finalDate,
-              decoration: InputDecoration(hintText: 'E-mail to use for log in.'),
-            ),
+            ElevatedButton(
+              child: const Text('Add Activity'),
+              onPressed: () => createActivity(_name.text, _vistaC ,id),
+            )
           ],
         ),
       ),
