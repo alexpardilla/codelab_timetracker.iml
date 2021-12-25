@@ -22,15 +22,16 @@ class PageActivities extends StatefulWidget {
 class _PageActivitiesState extends State<PageActivities> {
   //late Tree tree;
   late int id;
+  late int depth = 5;
   late Future<Tree> futureTree;
   late Timer _timer;
-  static const int periodRefresh = 6;
+  static const int periodRefresh = 2;
 
   @override
   void initState() {
     super.initState();
     id = widget.id;
-    futureTree = getTree(id);
+    futureTree = getTree(id, depth);
     _activateTimer();
     //tree = getTree();
   }
@@ -61,7 +62,8 @@ class _PageActivitiesState extends State<PageActivities> {
                 //TODO other actions
               ],
             ),
-            body: ListView.separated(
+            body:
+            ListView.separated(
               // it's like ListView.builder() but better because it includes a separator between items
               padding: const EdgeInsets.all(16.0),
               itemCount: snapshot.data!.root.children.length,
@@ -69,6 +71,26 @@ class _PageActivitiesState extends State<PageActivities> {
                   _buildRow(snapshot.data!.root.children[index], index),
               separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
+
+            ),
+            bottomNavigationBar: BottomAppBar(
+              shape: const CircularNotchedRectangle(),
+              child: Container(
+                height: 150.0,
+                color: Colors.blue[700],
+                alignment: Alignment.center,
+                child: Text('Nom: ${snapshot.data!.root.name}\n'
+                    'Data final: ${snapshot.data!.root.initialDate != null ?
+                  snapshot.data!.root.initialDate.toString().split('.').first : "No hi ha temps"}\n'
+                    'Data Inicial: ${snapshot.data!.root.finalDate != null ?
+                  snapshot.data!.root.finalDate.toString().split('.').first : "No hi ha temps"}\n'
+                    'Duración total: ${snapshot.data!.root.duration}\n'
+                    'Id: ${snapshot.data!.root.id}\n',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline5!
+                        .copyWith(color: Colors.white)),
+              ),
             ),
             floatingActionButton: FloatingActionButton(
               child: const Icon(Icons.add),
@@ -80,6 +102,7 @@ class _PageActivitiesState extends State<PageActivities> {
                 }
 
             ),
+
           );
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -98,38 +121,38 @@ class _PageActivitiesState extends State<PageActivities> {
   Widget _buildRow(Activity activity, int index) {
     String strDuration = Duration(seconds: activity.duration).toString().split('.').first;
     // split by '.' and taking first element of resulting list removes the microseconds part
+
     if (activity is Project) {
       return ListTile(
-        title: Text('${activity.name}'),
+        title: Text('${activity.name} \nDuration: $strDuration'),
         subtitle: const Text('Project'),
-        trailing: Text('$strDuration'),
         onTap: () => _navigateDownActivities(activity.id),
       );
     } else if (activity is Task) {
-      Task task = activity as Task;
+      Task task = activity;
       // at the moment is the same, maybe changes in the future
-      Widget trailing;
-      trailing = Text('$strDuration');
       return ListTile(
-        title: Text('${activity.name}'),
-        subtitle: const Text('Task'),
-        trailing: trailing,
-        onTap: () => _navigateDownIntervals(activity.id),
-        onLongPress: () {
-          if ((activity as Task).active) {
-            stop(activity.id);
+        title: Text('${task.name} \nDuration: $strDuration'),
+        subtitle: Text('Task \n${task.active ? "Actiu" :  "No actiu"} '),
+        onTap: () => _navigateDownIntervals(task.id),
+        trailing: IconButton(
+        icon: (activity).active ? const Icon(Icons.pause_circle_outline) : const Icon(Icons.play_circle_fill_outlined),
+        onPressed: () {
+          if ((task).active) {
+            stop(task.id);
             _refresh(); //to show immediately that task has started
           } else {
-            start(activity.id);
+            start(task.id);
             _refresh(); //to show immediately that task has stopped
           }
-        },
+        }),
       );
     } else {
       throw(Exception("Activity that is neither a Task or a Project"));
       // this solves the problem of return Widget is not nullable because an
       // Exception is also a Widget?
     }
+
   }
 
   void _navigateDownActivities(int childId) {
@@ -155,13 +178,13 @@ class _PageActivitiesState extends State<PageActivities> {
   }
 
   void _refresh() async {
-    futureTree = getTree(id);
+    futureTree = getTree(id, depth);
     setState(() {});
   }
 
   void _activateTimer() {
     _timer = Timer.periodic(const Duration(seconds: periodRefresh), (Timer t) {
-      futureTree = getTree(id);
+      futureTree = getTree(id, depth);
       setState(() {});
     });
   }

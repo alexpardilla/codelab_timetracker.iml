@@ -107,10 +107,6 @@ class _PageAddActivityState extends State<PageAddActivity> {
     );
   }
 
-  void _addActivity() {
-
-  }
-
   @override
   void dispose() {
     // "The framework calls this method when this State object will never build again"

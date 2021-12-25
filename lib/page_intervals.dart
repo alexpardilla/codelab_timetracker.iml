@@ -18,16 +18,17 @@ class PageIntervals extends StatefulWidget {
 
 class _PageIntervalsState extends State<PageIntervals> {
   //late Tree.Tree tree;
-  late int id;
+  late int id_task;
+  late int depth = 5;
   late Future<Tree.Tree> futureTree;
   late Timer _timer;
-  static const int periodeRefresh = 6;
+  static const int periodeRefresh = 2;
 
   @override
   void initState() {
     super.initState();
-    id = widget.id;
-    futureTree = getTree(id);
+    id_task = widget.id;
+    futureTree = getTree(id_task, depth);
     _activateTimer();
     //tree = Tree.getTreeTask();
     // the root is a task and the children its intervals
@@ -44,7 +45,8 @@ class _PageIntervalsState extends State<PageIntervals> {
           int numChildren = snapshot.data!.root.children.length;
           return Scaffold(
             appBar: AppBar(
-              title: Text(snapshot.data!.root.name),
+              title: Text("Intervals de " +snapshot.data!.root.name),
+
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
                   onPressed: () {
@@ -56,8 +58,10 @@ class _PageIntervalsState extends State<PageIntervals> {
                   }),
               ],
             ),
-            body: ListView.separated(
+            body:
+              ListView.separated(
               // it's like ListView.builder() but better because it includes a separator between items
+
               padding: const EdgeInsets.all(16.0),
               itemCount: numChildren,
               itemBuilder: (BuildContext context, int index) =>
@@ -73,7 +77,7 @@ class _PageIntervalsState extends State<PageIntervals> {
         return Container(
             height: MediaQuery.of(context).size.height,
             color: Colors.white,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ));
       },
@@ -88,14 +92,23 @@ class _PageIntervalsState extends State<PageIntervals> {
     String strInitialDate = interval.initialDate.toString().split('.')[0];
     // this removes the microseconds part
     String strFinalDate = interval.finalDate.toString().split('.')[0];
-    return ListTile(
-      title: Text('from ${strInitialDate} to ${strFinalDate}'),
-      trailing: Text('$strDuration'),
-    );
+
+      return ListTile(
+        title: Text('DATA INICI: ${strInitialDate} \nFINS ${strFinalDate}'),
+        subtitle: Text('${interval.active}' == 'true' ? "Active" : "Not active"),
+        trailing: Text('Duracion total\n${interval.duration}'),
+      );
+
   }
+
+  void _refresh() async {
+    futureTree = getTree(id_task, depth);
+    setState(() {});
+  }
+
   void _activateTimer() {
     _timer = Timer.periodic(Duration(seconds: periodeRefresh), (Timer t) {
-      futureTree = getTree(id);
+      futureTree = getTree(id_task, depth);
       setState(() {});
     });
   }
