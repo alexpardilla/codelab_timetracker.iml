@@ -28,7 +28,7 @@ class _PageIntervalsState extends State<PageIntervals> {
   void initState() {
     super.initState();
     id_task = widget.id;
-    futureTree = getTree(id_task, depth);
+    futureTree = getTree(id_task);
     _activateTimer();
     //tree = Tree.getTreeTask();
     // the root is a task and the children its intervals
@@ -45,7 +45,7 @@ class _PageIntervalsState extends State<PageIntervals> {
           int numChildren = snapshot.data!.root.children.length;
           return Scaffold(
             appBar: AppBar(
-              title: Text("Intervals de " +snapshot.data!.root.name),
+              title: Text("Intervalos de " +snapshot.data!.root.name),
 
               actions: <Widget>[
                 IconButton(icon: Icon(Icons.home),
@@ -94,21 +94,21 @@ class _PageIntervalsState extends State<PageIntervals> {
     String strFinalDate = interval.finalDate.toString().split('.')[0];
 
       return ListTile(
-        title: Text('DATA INICI: ${strInitialDate} \nFINS ${strFinalDate}'),
-        subtitle: Text('${interval.active}' == 'true' ? "Active" : "Not active"),
-        trailing: Text('Duracion total\n${interval.duration}'),
+        title: Text('Data inicio: ${strInitialDate} \nFINS ${strFinalDate}'),
+        subtitle: Text('${interval.active}' == 'true' ? "Activo" : "No activo"),
+        trailing: Text('Duración total\n${strDuration}'),
       );
 
   }
 
   void _refresh() async {
-    futureTree = getTree(id_task, depth);
+    futureTree = getTree(id_task);
     setState(() {});
   }
 
   void _activateTimer() {
     _timer = Timer.periodic(Duration(seconds: periodeRefresh), (Timer t) {
-      futureTree = getTree(id_task, depth);
+      futureTree = getTree(id_task);
       setState(() {});
     });
   }

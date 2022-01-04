@@ -36,7 +36,7 @@ class _PageAddActivityState extends State<PageAddActivity> {
     return SafeArea(child:
       Scaffold(
         appBar: AppBar(
-          title: Text("FORM"),
+          title: Text("Formulario"),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.home),
                 onPressed: () {
@@ -62,11 +62,11 @@ class _PageAddActivityState extends State<PageAddActivity> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text('Add task or project'),
+              child: Text('Añade una tarea o proyecto'),
             ),
             TextFormField(
               controller: _name,
-              decoration: InputDecoration(hintText: 'Insert name of task/project'),
+              decoration: InputDecoration(hintText: 'Añade el nombre de la actividad'),
             ),
             Expanded(
                 child: Row(
@@ -74,7 +74,7 @@ class _PageAddActivityState extends State<PageAddActivity> {
                   children: <Widget>[
                     Expanded(
                       child: Container(
-                        child: Text('Que vols crear?'),
+                        child: Text('Que quieres crear?'),
 
                       ),
                     ),
@@ -98,7 +98,7 @@ class _PageAddActivityState extends State<PageAddActivity> {
 
             ),
             ElevatedButton(
-              child: const Text('Add Activity'),
+              child: const Text('Añadir nueva Actividad'),
               onPressed: () => createActivity(_name.text, _vistaC ,id),
             )
           ],

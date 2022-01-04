@@ -31,7 +31,7 @@ class _PageActivitiesState extends State<PageActivities> {
   void initState() {
     super.initState();
     id = widget.id;
-    futureTree = getTree(id, depth);
+    futureTree = getTree(id);
     _activateTimer();
     //tree = getTree();
   }
@@ -81,9 +81,9 @@ class _PageActivitiesState extends State<PageActivities> {
                 alignment: Alignment.center,
                 child: Text('Nom: ${snapshot.data!.root.name}\n'
                     'Data final: ${snapshot.data!.root.initialDate != null ?
-                  snapshot.data!.root.initialDate.toString().split('.').first : "No hi ha temps"}\n'
-                    'Data Inicial: ${snapshot.data!.root.finalDate != null ?
-                  snapshot.data!.root.finalDate.toString().split('.').first : "No hi ha temps"}\n'
+                  snapshot.data!.root.initialDate.toString().split('.').first : "No hay tiempo"}\n'
+                    'Data inicial: ${snapshot.data!.root.finalDate != null ?
+                  snapshot.data!.root.finalDate.toString().split('.').first : "No hay tiempo"}\n'
                     'Duración total: ${snapshot.data!.root.duration}\n'
                     'Id: ${snapshot.data!.root.id}\n',
                     style: Theme.of(context)
@@ -124,16 +124,16 @@ class _PageActivitiesState extends State<PageActivities> {
 
     if (activity is Project) {
       return ListTile(
-        title: Text('${activity.name} \nDuration: $strDuration'),
-        subtitle: const Text('Project'),
+        title: Text('${activity.name} \nDuración: $strDuration'),
+        subtitle: const Text('Proyecto'),
         onTap: () => _navigateDownActivities(activity.id),
       );
     } else if (activity is Task) {
       Task task = activity;
       // at the moment is the same, maybe changes in the future
       return ListTile(
-        title: Text('${task.name} \nDuration: $strDuration'),
-        subtitle: Text('Task \n${task.active ? "Actiu" :  "No actiu"} '),
+        title: Text('${task.name} \nDuración: $strDuration'),
+        subtitle: Text('Tarea \n${task.active ? "Activo" :  "No activo"} '),
         onTap: () => _navigateDownIntervals(task.id),
         trailing: IconButton(
         icon: (activity).active ? const Icon(Icons.pause_circle_outline) : const Icon(Icons.play_circle_fill_outlined),
@@ -148,7 +148,7 @@ class _PageActivitiesState extends State<PageActivities> {
         }),
       );
     } else {
-      throw(Exception("Activity that is neither a Task or a Project"));
+      throw(Exception("La actividad no es ni una tarea ni un proyecto"));
       // this solves the problem of return Widget is not nullable because an
       // Exception is also a Widget?
     }
@@ -178,13 +178,13 @@ class _PageActivitiesState extends State<PageActivities> {
   }
 
   void _refresh() async {
-    futureTree = getTree(id, depth);
+    futureTree = getTree(id);
     setState(() {});
   }
 
   void _activateTimer() {
     _timer = Timer.periodic(const Duration(seconds: periodRefresh), (Timer t) {
-      futureTree = getTree(id, depth);
+      futureTree = getTree(id);
       setState(() {});
     });
   }

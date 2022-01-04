@@ -19,8 +19,9 @@ const String baseUrl = "http://localhost:8080";
 // https://newbedev.com/how-can-i-access-my-localhost-from-my-android-device
 // look for "Portable solution with ngrok"
 
-Future<Tree> getTree(int id, int depth) async {
-  var uri = Uri.parse("$baseUrl/get_tree?$id&$depth");
+Future<Tree> getTree(int id) async {
+  //var uri = Uri.parse("$baseUrl/get_tree?$id&$depth");
+  var uri = Uri.parse("$baseUrl/get_tree?$id");
   // see https://pub.dev/packages/http for examples of use
   final response = await client.get(uri);
   // response is NOT a Future because of await but since getTree() is async,
@@ -65,7 +66,6 @@ Future<void> createActivity(String name, String className,int fatherId) async {
   var uri = Uri.parse("$baseUrl/createActivity?$name&$fatherId&$className");
   final response = await client.get(uri);
   if (response.statusCode == 200) {
-    print("createActivity?$name&=$fatherId&=$className");
     print("statusCode=$response.statusCode");
   } else {
     print("statusCode=$response.statusCode");
