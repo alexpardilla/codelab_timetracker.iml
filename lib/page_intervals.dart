@@ -94,7 +94,7 @@ class _PageIntervalsState extends State<PageIntervals> {
     String strFinalDate = interval.finalDate.toString().split('.')[0];
 
       return ListTile(
-        title: Text('Data inicio: ${strInitialDate} \nFINS ${strFinalDate}'),
+        title: Text('Fecha inicio: ${strInitialDate} \nHasta ${strFinalDate}'),
         subtitle: Text('${interval.active}' == 'true' ? "Activo" : "No activo"),
         trailing: Text('Duración total\n${strDuration}'),
       );

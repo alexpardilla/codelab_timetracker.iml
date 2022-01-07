@@ -79,10 +79,10 @@ class _PageActivitiesState extends State<PageActivities> {
                 height: 150.0,
                 color: Colors.blue[700],
                 alignment: Alignment.center,
-                child: Text('Nom: ${snapshot.data!.root.name}\n'
-                    'Data final: ${snapshot.data!.root.initialDate != null ?
+                child: Text('Nombre: ${snapshot.data!.root.name}\n'
+                    'Fecha final: ${snapshot.data!.root.initialDate != null ?
                   snapshot.data!.root.initialDate.toString().split('.').first : "No hay tiempo"}\n'
-                    'Data inicial: ${snapshot.data!.root.finalDate != null ?
+                    'Fecha inicial: ${snapshot.data!.root.finalDate != null ?
                   snapshot.data!.root.finalDate.toString().split('.').first : "No hay tiempo"}\n'
                     'Duración total: ${snapshot.data!.root.duration}\n'
                     'Id: ${snapshot.data!.root.id}\n',
